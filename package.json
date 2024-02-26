@@ -1,0 +1,31 @@
+{
+  "name": "@tenado/element5",
+  "version": "1.0.0",
+  "description": "根据八字获取五行信息",
+  "main": "./lib/element5.umd.cjs",
+  "module": "./lib/element5.js",
+  "exports": {
+    ".": {
+      "require": "./lib/element5.umd.cjs",
+      "import": "./lib/element5.js"
+    }
+  },
+  "scripts": {
+    "dev": "node ./node/index.js",
+    "build": "vite build"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tenadolanter/element5.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tenadolanter/element5/issues"
+  },
+  "homepage": "https://github.com/tenadolanter/element5#readme",
+  "dependencies": {
+    "vite": "^5.1.4"
+  }
+}

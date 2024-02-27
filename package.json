@@ -1,6 +1,6 @@
 {
   "name": "@tenado/element5",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "根据八字获取五行信息",
   "main": "./lib/element5.umd.cjs",
   "module": "./lib/element5.js",

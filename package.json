@@ -10,6 +10,9 @@
       "import": "./lib/element5.js"
     }
   },
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "dev": "node ./node/index.js",
     "build": "vite build"

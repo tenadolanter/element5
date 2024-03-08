@@ -52,7 +52,7 @@ export const getScore = (element5) => {
   char8.forEach((ele, index) => {
     // 如果是天干
     if(index % 2 === 0) {
-      const score = GanScore[ele][monthZhi];
+      const score = GanScore?.[ele]?.[monthZhi];
       calcScore(element5, ele, score);
     }
     // 否则是地支

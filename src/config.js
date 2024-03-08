@@ -28,14 +28,6 @@ export const ZhiElement5 = {
 
 export const Element5 = ["金", "木", "水", "火", "土"];
 
-export const Element5StrMap = {
-  "金": "jin",
-  "木": "mu",
-  "水": "shui",
-  "火": "huo",
-  "土": "tu",
-}
-
 /**
  * 五行生成顺序，金生水，水生木，木生火，火生土，土生金
  *

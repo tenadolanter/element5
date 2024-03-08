@@ -1,4 +1,4 @@
-import { GanElement5, GenerateElement, Element5, Element5StrMap,  GanScore, ZhiScore } from "./config.js";
+import { GanElement5, GenerateElement, Element5, GanScore, ZhiScore } from "./config.js";
 
 /**
  * 获取日主五行属性
@@ -7,7 +7,7 @@ import { GanElement5, GenerateElement, Element5, Element5StrMap,  GanScore, ZhiS
 export const getMainEle = (element5) => {
   const char8 = element5.char8;
   const dayGan = char8[4];
-  element5.mainElement = GanElement5[dayGan];
+  element5.main = GanElement5[dayGan];
 }
 
 /**
@@ -15,9 +15,9 @@ export const getMainEle = (element5) => {
  * @param { Object } - element5
 */
 export const getTongLei = (element5) => {
-  const mainElement = element5.mainElement;
+  const mainElement = element5.main;
   const tonglei = GenerateElement[mainElement]
-  element5.tongLeiElement = [mainElement, tonglei];
+  element5.similars = [mainElement, tonglei];
 }
 
 
@@ -26,21 +26,20 @@ export const getTongLei = (element5) => {
  * @param { Object } - element5
 */
 export const getYiLei = (element5) => {
-  let eles = element5.tongLeiElement;
+  let eles = element5.similars;
   let results = [];
   Element5.forEach(item => {
     if(!eles.includes(item)) {
       results.push(item)
     }
   })
-  element5.yiLeiElement = results;
+  element5.differents = results;
 }
 
 export const calcScore = (element5, element, score) => {
   const ele = GanElement5[element];
-  const str = Element5StrMap[ele];
-  const keyName = `${str}Score`
-  element5[keyName] = element5[keyName] + score;
+  const preScore = element5?.['score']?.[ele] || 0;
+  element5['score'][ele] = preScore + score;
 }
 
 /**
@@ -70,15 +69,62 @@ export const getScore = (element5) => {
   const getAllScore = (element5, arr) => {
     let sum = 0;
     arr.forEach(ele => {
-      const str = Element5StrMap[ele];
-      const keyName = `${str}Score`
-      sum = sum + element5[keyName];
+      sum = sum + (element5["score"][ele] || 0);
     })
     return sum;
   }
-  const {  tongLeiElement, yiLeiElement } = element5;
-  element5.tongLeiScore = getAllScore(element5, tongLeiElement);
-  element5.yiLeiScore = getAllScore(element5, yiLeiElement);
+  const {  similars, differents } = element5;
+  element5.similarScore = getAllScore(element5, similars);
+  element5.differentScore = getAllScore(element5, differents);
+}
+
+/**
+ * 获取五行缺啥
+ * @param { Object } - element5
+*/
+export const getShort = (element5) => {
+  const { score } = element5 ?? {};
+  let shorts = [];
+  Object.keys(item => {
+    if(score[item] === 0) {
+      shorts.push(item);
+    }
+  })
+  element5.shorts = shorts;
+}
+
+/**
+ * 获取五行应该补什么
+ * @param { Object } - element5
+*/
+export const getSupply = (element5) => {
+  const { similarScore, differentScore, similars, differents  } = element5 ?? {};
+  const calc = similarScore - differentScore;
+  const absVal = Math.abs(calc);
+  const getMinScore = (element5, arr, result) => {
+    const { score = {} } = element5 ?? {};
+    arr.forEach(item => {
+      if(!result) result = item;
+      const preScore = score[result] || 0;
+      const curScore = score[item] || 0;
+      if(preScore > curScore) {
+        result = item;
+      }
+    })
+    return result;
+  }
+  let supplyOf = "";
+  if(absVal > 0.8) {
+    // 缺异类
+    if (calc > 0) {
+      supplyOf = getMinScore(element5, differents);
+    }
+    // 缺同类
+    else {
+      supplyOf = getMinScore(element5, similars);
+    }
+  }
+  element5.supplyOf = supplyOf;
 }
 
 
@@ -90,25 +136,23 @@ export default (char8) => {
   let element5 = {
     char8: char8,
     // 日主五行属性
-    mainElement: "",
+    main: "",
     // 同类
-    tongLeiElement: [],
+    similars: [],
     // 异类
-    yiLeiElement: [],
+    differents: [],
     // 金木水火土的分数
-    jinScore: 0,
-    muScore: 0,
-    shuiScore: 0,
-    huoScore: 0,
-    tuScore: 0,
-    tongLeiScore: 0,
-    yiLeiScore: 0,
+    score: {},
+    similarScore: 0,
+    differentScore: 0,
   };
   if(!(Array.isArray(char8) && char8.length === 8)) return element5;
   getMainEle(element5);
   getTongLei(element5);
   getYiLei(element5);
   getScore(element5);
+  getShort(element5);
+  getSupply(element5);
   return element5;
 }
 
